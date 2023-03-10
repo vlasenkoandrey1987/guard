@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import PassHolder
+from .models import Pass, PassHolder
 
 
 class PassHolderAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ class PassHolderAdmin(admin.ModelAdmin):
 
 
 admin.site.register(PassHolder, PassHolderAdmin)
+admin.site.register(Pass)
