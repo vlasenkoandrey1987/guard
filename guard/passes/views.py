@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
@@ -12,8 +14,10 @@ class PassHolderViewSet(viewsets.ModelViewSet):
     serializer_class = PassHolderSerializer
 
     def perform_destroy(self, instance):
-        # Реализовать запрет на удаление, если у держателя пропусков есть хоть
-        # один активный пропуск
+        for pass_ in instance.passes.all():
+            if (pass_.valid_from <= datetime.now().astimezone() <
+                    pass_.valid_until):
+                raise PermissionDenied
         super(PassHolderViewSet, self).perform_destroy(instance)
 
 
@@ -29,5 +33,7 @@ class PassViewSet(viewsets.ModelViewSet):
         serializer.save(mfuid=create_mfuid())
 
     def perform_update(self, serializer):
-        # Дописать запрет на обновление, если mfuid не совпадает с текущим
+        if ('mfuid' in self.request.data
+                and self.request.data['mfuid'] != serializer.instance.mfuid):
+            raise PermissionDenied
         super(PassViewSet, self).perform_update(serializer)
