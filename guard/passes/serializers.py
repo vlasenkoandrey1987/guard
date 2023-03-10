@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import serializers
 
 from .models import Pass, PassHolder
@@ -12,10 +14,13 @@ class PassHolderSerializer(serializers.ModelSerializer):
 
 class PassSerializer(serializers.ModelSerializer):
     mfuid = serializers.CharField(read_only=True)
-
-    # Реализовать поле active
+    active = serializers.SerializerMethodField()
 
     class Meta:
         model = Pass
         fields = ('id', 'pass_holder', 'mfuid', 'valid_from', 'valid_until',
-                  'created')
+                  'active', 'created')
+
+    def get_active(self, instance):
+        return (instance.valid_from <= datetime.now().astimezone() <
+                instance.valid_until)
