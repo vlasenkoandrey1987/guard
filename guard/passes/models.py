@@ -18,3 +18,15 @@ class PassHolder(models.Model):
 
     def __str__(self):
         return self.person.username
+
+
+class Pass(models.Model):
+    pass_holder = models.ForeignKey(
+        PassHolder,
+        on_delete=models.CASCADE,
+        related_name='passes',
+    )
+    mfuid = models.CharField(max_length=20)
+    valid_from = models.DateTimeField('Действителен с')
+    valid_until = models.DateTimeField('Действителен до')
+    created = models.DateTimeField('Дата создания', auto_now_add=True)
